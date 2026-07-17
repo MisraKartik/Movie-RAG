@@ -644,10 +644,20 @@ Question: {question}"""
     # ══════════════════════════════════════════════════════════════════════════
     #  NEW: HuggingFace Embeddings (same model as Chroma's default)
     # ══════════════════════════════════════════════════════════════════════════
-    embeddings = HuggingFaceEmbeddings(
-        model_name="all-MiniLM-L6-v2",
-        encode_kwargs={"normalize_embeddings": True},
-    )
+        # ══════════════════════════════════════════════════════════════════════════
+    #  Lightweight ONNX Embeddings (matches original ChromaDB vectors exactly)
+    # ══════════════════════════════════════════════════════════════════════════
+    from chromadb.utils import embedding_functions
+
+    chroma_native_ef = embedding_functions.DefaultEmbeddingFunction()
+
+    class LangChainChromaBuiltInEmbeddings:
+        def embed_documents(self, texts):
+            return chroma_native_ef(texts)
+        def embed_query(self, text):
+            return chroma_native_ef([text])[0]
+
+    embeddings = LangChainChromaBuiltInEmbeddings()
 
     # ══════════════════════════════════════════════════════════════════════════
     #  NEW: Qdrant Vector Store
