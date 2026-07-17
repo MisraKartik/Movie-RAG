@@ -13,7 +13,6 @@ from langchain_core.output_parsers import StrOutputParser
 # ═══════════════════════════════════════════════════════════════════════════════
 from qdrant_client import QdrantClient
 from langchain_qdrant import QdrantVectorStore
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.query_constructors.qdrant import QdrantTranslator
 
 load_dotenv()
