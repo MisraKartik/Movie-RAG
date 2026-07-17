@@ -4,7 +4,7 @@ import streamlit as st
 from langchain_classic.chains.query_constructor.base import AttributeInfo
 from langchain_classic.retrievers.self_query.base import SelfQueryRetriever
 from dotenv import load_dotenv
-from langchain_classic.retrievers.self_query.qdrant import QdrantTranslator
+from langchain_community.query_constructors.qdrant import QdrantTranslator
 
 
 load_dotenv()
