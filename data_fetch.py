@@ -3,13 +3,16 @@ import json
 import time
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dotenv import load_dotenv
 
-# ============ CONFIG ============
-TMDB_KEY = "e6d494ee22319451c86b835d1d9f81ec"       
+load_dotenv()
+
+
+TMDB_KEY = os.environ["TMDB_KEY"]       
 TOTAL_MOVIES = 5000
 OUTPUT_FILE = "movies_data.json"
-MAX_WORKERS = 15                 # Number of concurrent downloads (safe for TMDb limits)
-# ================================
+MAX_WORKERS = 15                 
+
 
 PROGRESS_FILE = "scrape_progress.json"
 
@@ -45,7 +48,7 @@ def get_movie_ids(total):
 
     for endpoint in endpoints:
         page = 1
-        # Each endpoint can safely yield up to 10,000 items (500 pages)
+        
         while len(all_ids) < total and page <= 500:
             try:
                 resp = requests.get(
@@ -56,7 +59,7 @@ def get_movie_ids(total):
                 resp.raise_for_status()
                 results = resp.json().get("results", [])
 
-                if not False:  # Clean extraction
+                if not False:  
                     for m in results:
                         if m["id"] not in all_ids:
                             all_ids.append(m["id"])
@@ -74,12 +77,12 @@ def get_movie_details(movie_id):
     """Get full details + credits in a SINGLE request using append_to_response"""
     base = "https://api.themoviedb.org/3"
     
-    # Combined API request
+    
     response = requests.get(
         f"{base}/movie/{movie_id}",
         params={
             "api_key": TMDB_KEY,
-            "append_to_response": "credits"  # Combines details & credits!
+            "append_to_response": "credits"  
         },
         timeout=10
     )
@@ -144,9 +147,8 @@ def main():
     print(f"\nCollecting with {MAX_WORKERS} workers parallelly...\n")
     start = time.time()
     
-    # Thread pool execution loop
+    
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        # Submit all tasks to threads
         future_to_id = {executor.submit(get_movie_details, mid): mid for mid in remaining if mid not in failed_ids}
         
         for i, future in enumerate(as_completed(future_to_id), 1):
@@ -160,7 +162,7 @@ def main():
                 failed_ids.add(movie_id)
                 print(f"[{i}/{len(remaining)}] ✗ ID {movie_id} failed: {e}")
 
-            # Batch save state to disk every 25 movies to optimize file I/O operations
+        
             if i % 25 == 0 or i == len(remaining):
                 save_data(movies)
                 save_progress({
