@@ -652,9 +652,9 @@ Question: {question}"""
 
     class LangChainChromaBuiltInEmbeddings:
         def embed_documents(self, texts):
-            return chroma_native_ef(texts)
+            return [list(map(float, v)) for v in chroma_native_ef(texts)]
         def embed_query(self, text):
-            return chroma_native_ef([text])[0]
+            return list(map(float, chroma_native_ef([text])[0]))
 
     embeddings = LangChainChromaBuiltInEmbeddings()
 
