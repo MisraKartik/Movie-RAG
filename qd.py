@@ -15,6 +15,7 @@ from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.embeddings import Embeddings
 from chromadb.utils import embedding_functions
 
 
@@ -719,7 +720,7 @@ Question: {question}"""
 
     chroma_native_ef = embedding_functions.DefaultEmbeddingFunction()
 
-    class LangChainChromaBuiltInEmbeddings:
+    class LangChainChromaBuiltInEmbeddings(Embeddings):
         def embed_documents(self, texts):
             return chroma_native_ef(texts)
 
